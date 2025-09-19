@@ -214,7 +214,6 @@ jobs:
           namespace: default
           # pass image and tag to Helm chart values (image.repository/image.tag or appimage/apptag depending on your template)
           values: |
-            image.repository=${{ env.ECR_REGISTRY }}/{{ env.ECR_REPOSITORY }}
+            image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}
             image.tag=${{ github.run_number }}
           name: vprofile-stack
-##
