@@ -184,6 +184,12 @@ jobs:
       - name: Verify caller identity
         run: aws sts get-caller-identity --output json
 
+      - name: Set ECR Registry
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
+          echo "ECR_REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
+
       - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
@@ -213,7 +219,5 @@ jobs:
           chart-path: ./helm/vprofilecharts
           namespace: default
           # pass image and tag to Helm chart values (image.repository/image.tag or appimage/apptag depending on your template)
-          values: |
-            image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}
-            image.tag=${{ github.run_number }}
+          values: "image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }},image.tag=${{ github.run_number }}"
           name: vprofile-stack
